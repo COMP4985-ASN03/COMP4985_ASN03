@@ -65,7 +65,6 @@ AudioPlayer::AudioPlayer(): audio_pos(0), playing(false), fastForwarding(false),
 
 }
 
-<<<<<<< HEAD
 /*------------------------------------------------------------------------------------------------------------------
 -- FUNCTION: openWavFile
 --
@@ -84,8 +83,6 @@ AudioPlayer::AudioPlayer(): audio_pos(0), playing(false), fastForwarding(false),
 -- NOTES:
 -- Opens a wav file to play (sourceFile is a WavFile that extends QFile, us QFile function to open)
 ----------------------------------------------------------------------------------------------------------------------*/
-=======
->>>>>>> a2e66fe482ed2bb44531604a767a5c3726c1eb17
 bool AudioPlayer::openWavFile(const QString &fileName){
     paused = false;
     playing = false;
@@ -297,7 +294,6 @@ qint64 AudioPlayer::readData(char *data, qint64 len){
     return chunk;
 }
 
-
 /*------------------------------------------------------------------------------------------------------------------
 -- FUNCTION: writeData
 --
@@ -323,7 +319,6 @@ qint64 AudioPlayer::writeData(const char *data, qint64 len){
     return 0;
 }
 
-
 /*------------------------------------------------------------------------------------------------------------------
 -- FUNCTION: bytesAvailable
 --
@@ -346,59 +341,6 @@ qint64 AudioPlayer::bytesAvailable() const{
     return audio_buffer.size() - audio_pos;
 }
 
-<<<<<<< HEAD
-/*------------------------------------------------------------------------------------------------------------------
--- FUNCTION: pos
---
--- DATE: April 11 2017
---
--- REVISIONS: (Date and Description)
---
--- DESIGNER: Terry Kang, Deric Mccadden, Jacob Frank, Mark Tattrie
---
--- PROGRAMMER: Terry Kang, Deric Mccadden, Jacob Frank, Mark Tattrie
---
--- INTERFACE: pos()
---
--- RETURNS: qint64 - the position that data is written to or read from. For sequential devices or closed devices,
---                   where there is no concept of a "current position", 0 is returned
---
--- NOTES:
--- QT function - The current read/write position of the device is maintained internally by QIODevice
-----------------------------------------------------------------------------------------------------------------------*/
-qint64 AudioPlayer::pos() const{
-    return audio_pos;
-}
-
-/*------------------------------------------------------------------------------------------------------------------
--- FUNCTION: AudioPlayer
---
--- DATE: April 11 2017
---
--- REVISIONS: (Date and Description)
---
--- DESIGNER: Terry Kang, Deric Mccadden, Jacob Frank, Mark Tattrie
---
--- PROGRAMMER: Terry Kang, Deric Mccadden, Jacob Frank, Mark Tattrie
---
--- INTERFACE: AudioPlayer::seek(qint64 pos)
---                 - qint64 post
---
--- RETURNS: qint64 - For random-access devices, this function sets the current position to pos, returning
---                   true on success, or false if an error occurred. For sequential devices, the default
---                   behavior is to do nothing and return false.
---
--- NOTES:
--- QT function - seek to the position specified in the parameter
-----------------------------------------------------------------------------------------------------------------------*/
-bool AudioPlayer::seek(qint64 pos){
-    if(pos < 0 || pos > audio_buffer.size())
-        return false;
-
-    audio_pos = pos;
-    return true;
-}
-
 /*------------------------------------------------------------------------------------------------------------------
 -- FUNCTION: pause
 --
@@ -417,8 +359,6 @@ bool AudioPlayer::seek(qint64 pos){
 -- NOTES:
 -- QT function - sets the bool playing to false and paused to true if it is currently playing
 ----------------------------------------------------------------------------------------------------------------------*/
-=======
->>>>>>> a2e66fe482ed2bb44531604a767a5c3726c1eb17
 bool AudioPlayer::pause(){
     if(playing) {
         paused = true;
@@ -429,7 +369,7 @@ bool AudioPlayer::pause(){
 }
 
 /*------------------------------------------------------------------------------------------------------------------
--- FUNCTION: pause
+-- FUNCTION: start
 --
 -- DATE: April 11 2017
 --
@@ -444,7 +384,7 @@ bool AudioPlayer::pause(){
 -- RETURNS: bool - return true
 --
 -- NOTES:
--- QT function - sets the bool playing to false and paused to true if it is currently playing
+-- QT function - sets the bool playing to false if it is currently paused
 ----------------------------------------------------------------------------------------------------------------------*/
 bool AudioPlayer::start(){
     playing = true;
