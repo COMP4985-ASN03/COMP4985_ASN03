@@ -1,23 +1,25 @@
 #ifndef CONNECTION_H
 #define CONNECTION_H
 
+#include "global.h"
+
 #include <winsock2.h>
 #include <windows.h>
 #include <stdio.h>
 #include <string>
-
-using std::string;
-
-#define PORT_TCP 5150
-#define PORT_UDP 5151
-#define DATA_BUFSIZE 1024
+#include <QByteArray>
 
 typedef struct _SOCKET_INFORMATION {
-   CHAR Buffer[DATA_BUFSIZE];
-   WSABUF DataBuf;
+   OVERLAPPED Overlapped;
    SOCKET Socket;
+   struct sockaddr_in client_address;
+   CHAR Buffer[BUFFERSIZE];
+   WSABUF DataBuf;
    DWORD BytesSEND;
    DWORD BytesRECV;
+   DWORD BytesToSend;
+   QByteArray *upload;
+   void *thisObj;
 } SOCKET_INFORMATION, * LPSOCKET_INFORMATION;
 
 
@@ -26,35 +28,44 @@ class Connection
 
 
 public:
-    DWORD                EventTotal = 0;
-    WSAEVENT             EventArray[WSA_MAXIMUM_WAIT_EVENTS];
-    LPSOCKET_INFORMATION SocketArray[WSA_MAXIMUM_WAIT_EVENTS];
+    Connection() = default;
 
-    Connection();
+    void WSAError(std::string method, int error);
 
-    bool _WSAStartup(WSADATA &wsa);
-    bool _WSAEventSelect(SOCKET &s, long lNetworkEvents);
-    bool _SocketTCP(SOCKET &s);
-    bool _SocketUDP(SOCKET &s);
-    bool _Bind(SOCKET &s, SOCKADDR_IN &InternetAddr);
-    bool _Connect(SOCKET &s, SOCKADDR_IN &clientService);
-    bool _Listen(SOCKET &s);
-    bool _WSAWaitForMultipleEvents(DWORD &Event);
-    bool _WSAEnumNetworkEvents(DWORD &Event, WSANETWORKEVENTS &NetworkEvents);
-    bool _Accept(SOCKET &s, DWORD &Event);
-    bool _WSARecv(LPSOCKET_INFORMATION &SocketInfo, DWORD &Event);
-    bool _Send(SOCKET &s, char *sendbuf, int bytes);
-    bool _Shutdown(SOCKET &s);
+    bool WSAStartup();
 
+    bool WSASocketTCP(SOCKET &s);
+    bool WSASocketUDP(SOCKET &s);
+    bool listen(SOCKET &s);
+    bool bind(SOCKET &s, int port);
+    bool setoptSO_REUSEADDR(SOCKET &s);
+    bool setoptIP_MULTICAST_TTL(SOCKET &s);
+    bool setoptIP_MULTICAST_LOOP(SOCKET &s);
+    bool setoptIP_ADD_MEMBERSHIP(SOCKET &s);
 
-    bool ReadData(string &buffer, WSANETWORKEVENTS &NetworkEvents, DWORD &Event);
-    bool ReceiveNewConnection(SOCKET &s, DWORD &Event, WSANETWORKEVENTS &NetworkEvents);
-    bool CloseSocket(DWORD &Event, WSANETWORKEVENTS &NetworkEvents);
-    bool CreateSocketInformation(SOCKET s);
-    void FreeSocketInformation(DWORD Event);
+    bool WSACreateEvent(WSAEVENT &event);
+    bool WSAEventSelect(SOCKET &sd, WSAEVENT &event, long networkEvents);
+    bool WSASetEvent(WSAEVENT &event);
+    bool WSAWaitForMultipleEvents(WSAEVENT &event);
 
 
+    bool WSASend(LPSOCKET_INFORMATION &SI,
+            LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine);
 
+    bool WSASendTo(LPSOCKET_INFORMATION &SI,
+                   LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine);//udp
+
+    bool WSARecv(LPSOCKET_INFORMATION &SI,
+            LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine);
+    bool WSARecvFrom(LPSOCKET_INFORMATION SI,
+            LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine);
+
+
+    bool createSocketInfo(LPSOCKET_INFORMATION &SocketInfo, SOCKET s);
+    bool checkError(LPSOCKET_INFORMATION &SI, DWORD error);
+    bool checkFinished(LPSOCKET_INFORMATION &SI, DWORD BytesTransferred);
+
+    int port;
 };
 
 #endif // CONNECTION_H

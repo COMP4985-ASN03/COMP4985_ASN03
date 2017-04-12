@@ -5,8 +5,9 @@
 #-------------------------------------------------
 
 QT       += core gui
+CONFIG += c++14
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets multimedia
 
 TARGET = Server
 TEMPLATE = app
@@ -26,11 +27,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
         mainwindow.cpp \
     connection.cpp \
-    server.cpp
+    server.cpp \
+    wavfile.cpp \
+    audioplayer.cpp
 
 HEADERS  += mainwindow.h \
     connection.h \
-    server.h
+    server.h \
+    wavfile.h \
+    audioplayer.h \
+    global.h
 
 FORMS    += mainwindow.ui
 
